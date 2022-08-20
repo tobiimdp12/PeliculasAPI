@@ -79,14 +79,13 @@ namespace PeliculasUnitTesting
         {
             int id = 1242;//ejemplo
 
-            //accion
-            //(OkObjectResult): para obtener la informacion
-            var result = (OkObjectResult)_characterController.GetCharacter(id);
 
-            //resultado
-            var character = Assert.IsType<Character>(result?.Value);
-            Assert.True(character == null);//siempre tiene que haber data
-            Assert.NotEqual(character?.Id, id);
+            //accion
+            var result = _characterController.GetCharacter(id);
+
+
+            //Assert
+            result.Should().BeOfType<NotFoundObjectResult>();
         }
 
         [Fact]//Fact: pruebas a ejecutar
