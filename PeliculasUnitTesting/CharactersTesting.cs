@@ -27,7 +27,7 @@ namespace PeliculasUnitTesting
         public CharactersTesting()
         {
             var dbOption = new DbContextOptionsBuilder<DataContext>()
-            .UseSqlServer(@"Data Source=DESKTOP-FBL8M17\\SQLEXPRESS;Initial Catalog=Movies;Integrated Security=True")
+            .UseSqlServer(@"Data Source=DESKTOP-FBL8M17\SQLEXPRESS;Initial Catalog=Movies;Integrated Security=True")
             .Options;
 
             MapperConfiguration mapperConfig = new MapperConfiguration(

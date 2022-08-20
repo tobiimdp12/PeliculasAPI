@@ -7,6 +7,7 @@ using PeliculasAPI.Utils;
 var builder = WebApplication.CreateBuilder(args);
 
 
+
 builder.Services.AddDbContext<DataContext>(options => {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
@@ -19,6 +20,7 @@ builder.Services.AddScoped<IMovieRepository,MovieRepository>();
 //Add services
 builder.Services.AddScoped<ICharacterService, CharacterService>();
 builder.Services.AddScoped<IMovieService, MovieService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Add services to the container.
 
