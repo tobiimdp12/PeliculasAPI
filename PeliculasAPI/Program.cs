@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using PeliculasAPI.Data;
+using PeliculasAPI.Repositories;
+using PeliculasAPI.Services;
 using PeliculasAPI.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +10,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<DataContext>(options => {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+//Add repositories
+
+builder.Services.AddScoped<ICharacterRepository,CharacterRepository>();
+builder.Services.AddScoped<IMovieRepository,MovieRepository>();
+
+//Add services
+builder.Services.AddScoped<ICharacterService, CharacterService>();
+builder.Services.AddScoped<IMovieService, MovieService>();
+
 // Add services to the container.
 
 builder.Services.AddControllers();

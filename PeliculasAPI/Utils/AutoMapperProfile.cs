@@ -9,12 +9,14 @@ namespace PeliculasAPI.Utils
         public AutoMapperProfile()
         {
             CreateMap<Character, CharacterDTO>();
+
             CreateMap<CharacterCreationDTO,Character >();
+
+ 
 
             CreateMap<Movies, MovieDTO>();
             CreateMap<MovieCreationDTO, Movies>();
 
-            CreateMap<MovieCreationDTO, Movies>();
 
         }
        

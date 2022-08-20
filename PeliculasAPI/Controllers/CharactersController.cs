@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using PeliculasAPI.Data;
 using PeliculasAPI.DTOs;
 using PeliculasAPI.Models;
+using PeliculasAPI.Repositories;
+using PeliculasAPI.Services;
 
 namespace PeliculasAPI.Controllers
 {
@@ -16,35 +18,32 @@ namespace PeliculasAPI.Controllers
     [ApiController]
     public class CharactersController : ControllerBase
     {
-        private readonly DataContext _context;
-        private readonly IMapper _mapper;
-        public CharactersController(DataContext context, IMapper mapper)
+
+        private readonly ICharacterService _characterService;
+        private readonly IMovieService _movieService;
+
+
+        public CharactersController(ICharacterService characterService, IMovieService movieService)
         {
-            _context = context;
-            _mapper = mapper;
+
+            _characterService = characterService;
+            _movieService = movieService;
         }
 
         // GET: api/Characters
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Character>>> GetCharacters()
         {
-            if (_context.Characters == null)
-            {
-                return NotFound();
-            }
-            return await _context.Characters.Include(m => m.Movies).ThenInclude(g=>g.Genre).ToListAsync();
+
+            return Ok(_characterService.GetAllCharacters());
         }
 
         // GET: api/Characters
         [HttpGet("/characters")]
         public async Task<ActionResult<IEnumerable<CharacterDTO>>> GetCharactersImageName()
         {
-            if (_context.Characters == null)
-            {
-                return NotFound();
-            }
-            var characters = _context.Characters;//Repository
-            var charactersToReturn = _mapper.Map<IEnumerable<CharacterDTO>>(characters);
+
+            var charactersToReturn = _characterService.GetCharactersImageName();
 
             return Ok(charactersToReturn);
         }
@@ -53,30 +52,24 @@ namespace PeliculasAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Character>> GetCharacter(int id)
         {
-            if (_context.Characters == null)
-            {
-                return NotFound();
-            }
-            var character = _context.Characters.Where(c => c.Id == id).Include(c=>c.Movies).ThenInclude(m=>m.Genre);
-            if (character == null)
-            {
-                return NotFound();
-            }
+
+            var character = _characterService.GetById(id);
+
+            if (character == null) return NotFound();
 
             return Ok(character);
         }
 
 
         [HttpGet("/name")]
-        public async Task<ActionResult<IEnumerable<Character>>> GetCharactersByName([FromQuery]string name)
+        public async Task<ActionResult<IEnumerable<Character>>> GetCharactersByName([FromQuery] string name)
         {
-            if (_context.Characters == null)
-            {
-                return NotFound();
-            }
 
-            var characters = _context.Characters.Where(u => u.Name.Contains(name)).Include(m=>m.Movies).ThenInclude(g=>g.Genre);
+            var characters = _characterService.getByName(name);
 
+            bool isEmpty = !characters.Any();
+
+            if (isEmpty) return BadRequest();
 
             return Ok(characters);
         }
@@ -84,13 +77,11 @@ namespace PeliculasAPI.Controllers
         [HttpGet("/age")]
         public async Task<ActionResult<IEnumerable<Character>>> GetCharactersByAge([FromQuery] int age)
         {
-            if (_context.Characters == null)
-            {
-                return NotFound();
-            }
+            var characters = _characterService.getByAge(age);
 
-            var characters = _context.Characters.Where(u => u.Age == age).Include(m => m.Movies).ThenInclude(g => g.Genre);
+            bool isEmpty = !characters.Any();
 
+            if (isEmpty) return BadRequest();
 
             return Ok(characters);
         }
@@ -98,21 +89,19 @@ namespace PeliculasAPI.Controllers
         [HttpGet("/movie")]
         public async Task<ActionResult<IEnumerable<Character>>> GetCharactersByMovie([FromQuery] int movieId)
         {
-            if (_context.Characters == null)
-            {
-                return NotFound();
-            }
-            Movies movie= _context.Movies.Find(movieId);
+
+            Movies movie = _movieService.GetById(movieId);
 
             if (movie == null) return NotFound();
 
-            var characters = _context.Characters.Where(c=>c.Movies.Contains(movie)).Include(m => m.Movies).ThenInclude(g => g.Genre);
+            var characters = _characterService.getByMovies(movieId);
 
+            bool isEmpty = !characters.Any();
+            
+            if (isEmpty) return BadRequest();
 
-            return Ok(characters.Include(c=>c.Movies).ThenInclude(m=>m.Genre));
+            return Ok(characters);
         }
-
-
 
 
         // POST: api/Characters
@@ -120,13 +109,9 @@ namespace PeliculasAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Character>> PostCharacter(CharacterCreationDTO characterDTO)
         {
-            if (_context.Characters == null)
-            {
-                return Problem("Entity set 'DataContext.Characters'  is null.");
-            }
-            Character character = _mapper.Map<Character>(characterDTO);
-            _context.Characters.Add(character);
-            await _context.SaveChangesAsync();
+            Character character = _characterService.AddCharacter(characterDTO);
+
+            if (character == null) return BadRequest();
 
             return Ok(character);
         }
@@ -134,24 +119,11 @@ namespace PeliculasAPI.Controllers
         [HttpPost("assignCharacter")]
         public async Task<ActionResult<Character>> AssignCharactertoMovie(CharacterMovies characterMovies)
         {
-            //get the character
-            var character = await _context.Characters
-                .Where(c => c.Id == characterMovies.CharacterId)
-                .Include(c => c.Movies)
-                .FirstOrDefaultAsync();
+            bool result = _characterService.AssignCharacterMovie(characterMovies);
 
-            if (character == null)
-                return NotFound();
+            if (result == false) return BadRequest();
 
-            //get skill
-            var movie = await _context.Movies.FindAsync(characterMovies.MovieId);
-            if (movie == null)
-                return NotFound();
-
-            character.Movies.Add(movie);
-            await _context.SaveChangesAsync();
-
-            return character;
+            return Ok("Movie added to character");
         }
 
 
@@ -163,19 +135,9 @@ namespace PeliculasAPI.Controllers
         public async Task<IActionResult> PutCharacter(int id, CharacterCreationDTO characterDTO)
         {
 
-
-            Character character = _context.Characters.Find(id);
-
+            Character character = _characterService.UpdateCharacter(id, characterDTO);
             if (character == null) return NotFound();
-
-
-            character = _mapper.Map(characterDTO, character);//para que el id no se transforme en 0
-
-            await _context.SaveChangesAsync();
             return Ok(character);
-
-
-       
         }
 
 
@@ -183,25 +145,14 @@ namespace PeliculasAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCharacter(int id)
         {
-            if (_context.Characters == null)
-            {
-                return NotFound();
-            }
-            var character = await _context.Characters.FindAsync(id);
-            if (character == null)
-            {
-                return NotFound();
-            }
 
-            _context.Characters.Remove(character);
-            await _context.SaveChangesAsync();
+            bool result = _characterService.DeleteCharacter(id);
 
-            return NoContent();
+            if (result == false) return BadRequest("Not found");
+
+            return Ok("Deleted Successfully");
         }
 
-        private bool CharacterExists(int id)
-        {
-            return (_context.Characters?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
+
     }
 }

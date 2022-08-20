@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using PeliculasAPI.Data;
 using PeliculasAPI.DTOs;
 using PeliculasAPI.Models;
+using PeliculasAPI.Services;
 
 namespace PeliculasAPI.Controllers
 {
@@ -16,34 +17,26 @@ namespace PeliculasAPI.Controllers
     [ApiController]
     public class MoviesController : ControllerBase
     {
-        private readonly DataContext _context;
-        private readonly IMapper _mapper;
+     
+        private readonly IMovieService _movieService;
 
-        public MoviesController(DataContext context, IMapper mapper)
+        public MoviesController( IMovieService movieService)
         {
-            _context = context;
-            _mapper = mapper;
+           _movieService = movieService;
         }
 
         // GET: api/Movies
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Movies>>> GetMovies()
         {
-          if (_context.Movies == null)
-          {
-              return NotFound();
-          }
-            return await _context.Movies.Include(x=>x.Genre).ToListAsync();
+         
+            return Ok(_movieService.GetAllMovies());
         }
         [HttpGet("/movies")]
         public async Task<ActionResult<IEnumerable<MovieDTO>>> GetMoviesImageTitleDate()
         {
-            if (_context.Movies == null)
-            {
-                return NotFound();
-            }
-            var movies = _context.Movies;//Repository
-            var moviesToReturn = _mapper.Map<IEnumerable<MovieDTO>>(movies);
+
+            var moviesToReturn = _movieService.GetMovieTitleImageDate();
 
             return Ok(moviesToReturn);
         }
@@ -53,11 +46,9 @@ namespace PeliculasAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Movies>> GetMovies(int id)
         {
-            if (_context.Movies == null)
-            {
-                return NotFound();
-            }
-            var movie = _context.Movies.Where(c => c.Id == id).Include(p=>p.Genre);
+        
+            var movie =_movieService.GetById(id);
+
             if (movie == null)
             {
                 return NotFound();
@@ -69,12 +60,9 @@ namespace PeliculasAPI.Controllers
         [HttpGet("/title")]
         public async Task<ActionResult<IEnumerable<Movies>>> GetMoviesByTitle([FromQuery] string Title)
         {
-            if (_context.Movies == null)
-            {
-                return NotFound();
-            }
+    
 
-            var movies = _context.Movies.Where(u => u.Title.Contains(Title)).Include(m => m.Genre);
+            var movies = _movieService.getByTitle(Title);
 
 
             return Ok(movies);
@@ -83,13 +71,8 @@ namespace PeliculasAPI.Controllers
         [HttpGet("/genre")]
         public async Task<ActionResult<IEnumerable<Movies>>> GetMoviesByGen([FromQuery] int genreId)
         {
-            if (_context.Movies == null)
-            {
-                return NotFound();
-            }
-
-            var movies = _context.Movies.Where(u => u.genreId == genreId).Include(m => m.Genre);
-
+     
+            var movies =_movieService.getByGen(genreId);
 
             return Ok(movies);
         }
@@ -97,16 +80,10 @@ namespace PeliculasAPI.Controllers
         [HttpGet("/sort")]
         public async Task<ActionResult<IEnumerable<Movies>>> SortMovies([FromQuery] string order)
         {
-            if (_context.Movies == null)
-            {
-                return NotFound();
-            }
-            List<Movies> movies = _context.Movies.OrderBy(o => o.Calification).Include(g=>g.Genre).ToList();
-            if (order.ToString().ToUpper() == "DESC")
-            {
-               movies.Reverse();
-            }
+           
+            var movies=_movieService.sortMovies(order);
 
+            if(movies == null) return BadRequest();
             return Ok(movies);
         }
 
@@ -116,13 +93,10 @@ namespace PeliculasAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Movies>> PostMovies(MovieCreationDTO moviesDTO)
         {
-            if (_context.Movies == null)
-            {
-                return Problem("Entity set 'DataContext.Movies'  is null.");
-            }
-            Movies movie = _mapper.Map<Movies>(moviesDTO);
-            _context.Movies.Add(movie);
-            await _context.SaveChangesAsync();
+
+            Movies movie = _movieService.AddMovie(moviesDTO);
+
+            if (movie == null) return BadRequest();
 
             return Ok(movie);
         }
@@ -132,14 +106,10 @@ namespace PeliculasAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMovies(int id, MovieCreationDTO moviesDTO)
         {
-            Movies movie = _context.Movies.Find(id);
+            Movies movie = _movieService.UpdateMovie(id,moviesDTO);
 
             if (movie == null) return NotFound();
 
-
-            movie = _mapper.Map(moviesDTO, movie);//para que el id no se transforme en 0
-
-            await _context.SaveChangesAsync();
             return Ok(movie);
 
         }
@@ -150,25 +120,14 @@ namespace PeliculasAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMovies(int id)
         {
-            if (_context.Movies == null)
-            {
-                return NotFound();
-            }
-            var movies = await _context.Movies.FindAsync(id);
-            if (movies == null)
-            {
-                return NotFound();
-            }
 
-            _context.Movies.Remove(movies);
-            await _context.SaveChangesAsync();
+            bool result = _movieService.DeleteMovie(id);
 
-            return NoContent();
+            if (result == false) return BadRequest("Not found");
+
+            return Ok("Deleted Successfully");
         }
 
-        private bool MoviesExists(int id)
-        {
-            return (_context.Movies?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
+       
     }
 }
