@@ -27,13 +27,13 @@ namespace PeliculasAPI.Controllers
 
         // GET: api/Movies
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Movies>>> GetMovies()
+        public ActionResult<IEnumerable<Movies>> GetMovies()
         {
-         
+
             return Ok(_movieService.GetAllMovies());
         }
         [HttpGet("/movies")]
-        public async Task<ActionResult<IEnumerable<MovieDTO>>> GetMoviesImageTitleDate()
+        public ActionResult<IEnumerable<MovieDTO>> GetMoviesImageTitleDate()
         {
 
             var moviesToReturn = _movieService.GetMovieTitleImageDate();
@@ -44,10 +44,10 @@ namespace PeliculasAPI.Controllers
 
         // GET: api/Movies/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Movies>> GetMovies(int id)
+        public ActionResult<Movies> GetMovies(int id)
         {
-        
-            var movie =_movieService.GetById(id);
+
+            var movie = _movieService.GetById(id);
 
             if (movie == null)
             {
@@ -58,9 +58,9 @@ namespace PeliculasAPI.Controllers
         }
 
         [HttpGet("/title")]
-        public async Task<ActionResult<IEnumerable<Movies>>> GetMoviesByTitle([FromQuery] string Title)
+        public ActionResult<IEnumerable<Movies>> GetMoviesByTitle([FromQuery] string Title)
         {
-    
+
 
             var movies = _movieService.getByTitle(Title);
 
@@ -69,21 +69,21 @@ namespace PeliculasAPI.Controllers
         }
 
         [HttpGet("/genre")]
-        public async Task<ActionResult<IEnumerable<Movies>>> GetMoviesByGen([FromQuery] int genreId)
+        public ActionResult<IEnumerable<Movies>> GetMoviesByGen([FromQuery] int genreId)
         {
-     
-            var movies =_movieService.getByGen(genreId);
+
+            var movies = _movieService.getByGen(genreId);
 
             return Ok(movies);
         }
 
         [HttpGet("/sort")]
-        public async Task<ActionResult<IEnumerable<Movies>>> SortMovies([FromQuery] string order)
+        public ActionResult<IEnumerable<Movies>> SortMovies([FromQuery] string order)
         {
-           
-            var movies=_movieService.sortMovies(order);
 
-            if(movies == null) return BadRequest();
+            var movies = _movieService.sortMovies(order);
+
+            if (movies == null) return BadRequest();
             return Ok(movies);
         }
 
@@ -91,7 +91,7 @@ namespace PeliculasAPI.Controllers
         // POST: api/Movies
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Movies>> PostMovies(MovieCreationDTO moviesDTO)
+        public ActionResult<Movies> PostMovies(MovieCreationDTO moviesDTO)
         {
 
             Movies movie = _movieService.AddMovie(moviesDTO);
@@ -104,9 +104,9 @@ namespace PeliculasAPI.Controllers
         // PUT: api/Movies/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutMovies(int id, MovieCreationDTO moviesDTO)
+        public IActionResult PutMovies(int id, MovieCreationDTO moviesDTO)
         {
-            Movies movie = _movieService.UpdateMovie(id,moviesDTO);
+            Movies movie = _movieService.UpdateMovie(id, moviesDTO);
 
             if (movie == null) return NotFound();
 
@@ -114,11 +114,11 @@ namespace PeliculasAPI.Controllers
 
         }
 
-        
+
 
         // DELETE: api/Movies/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMovies(int id)
+        public IActionResult DeleteMovies(int id)
         {
 
             bool result = _movieService.DeleteMovie(id);
@@ -128,6 +128,6 @@ namespace PeliculasAPI.Controllers
             return Ok("Deleted Successfully");
         }
 
-       
+
     }
 }

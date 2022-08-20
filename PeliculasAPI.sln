@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PeliculasAPI", "PeliculasAPI\PeliculasAPI.csproj", "{A642BE3F-3079-4F0C-B91F-D28D03D3CC44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PeliculasAPI", "PeliculasAPI\PeliculasAPI.csproj", "{A642BE3F-3079-4F0C-B91F-D28D03D3CC44}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PeliculasUnitTesting", "PeliculasUnitTesting\PeliculasUnitTesting.csproj", "{1F20C1E8-9EE7-4974-9A2F-9D271F0835BA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{A642BE3F-3079-4F0C-B91F-D28D03D3CC44}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A642BE3F-3079-4F0C-B91F-D28D03D3CC44}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A642BE3F-3079-4F0C-B91F-D28D03D3CC44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F20C1E8-9EE7-4974-9A2F-9D271F0835BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F20C1E8-9EE7-4974-9A2F-9D271F0835BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F20C1E8-9EE7-4974-9A2F-9D271F0835BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F20C1E8-9EE7-4974-9A2F-9D271F0835BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

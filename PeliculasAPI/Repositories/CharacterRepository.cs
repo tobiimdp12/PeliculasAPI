@@ -22,7 +22,7 @@ namespace PeliculasAPI.Repositories
         //id
         public Character getCharacterById(int id)
         {
-            return _context.Characters.Find(id);
+            return _context.Characters.Where(c => c.Id == id).Include(m => m.Movies).ThenInclude(g=>g.Genre).FirstOrDefault(); 
         }
     
         public IEnumerable<Character> getByName(string name)

@@ -32,7 +32,7 @@ namespace PeliculasAPI.Controllers
 
         // GET: api/Characters
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Character>>> GetCharacters()
+        public ActionResult<IEnumerable<Character>> GetCharacters()
         {
 
             return Ok(_characterService.GetAllCharacters());
@@ -40,7 +40,7 @@ namespace PeliculasAPI.Controllers
 
         // GET: api/Characters
         [HttpGet("/characters")]
-        public async Task<ActionResult<IEnumerable<CharacterDTO>>> GetCharactersImageName()
+        public ActionResult<IEnumerable<CharacterDTO>> GetCharactersImageName()
         {
 
             var charactersToReturn = _characterService.GetCharactersImageName();
@@ -50,7 +50,7 @@ namespace PeliculasAPI.Controllers
 
         // GET: api/Characters/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Character>> GetCharacter(int id)
+        public ActionResult GetCharacter(int id)
         {
 
             var character = _characterService.GetById(id);
@@ -62,7 +62,7 @@ namespace PeliculasAPI.Controllers
 
 
         [HttpGet("/name")]
-        public async Task<ActionResult<IEnumerable<Character>>> GetCharactersByName([FromQuery] string name)
+        public ActionResult<IEnumerable<Character>> GetCharactersByName([FromQuery] string name)
         {
 
             var characters = _characterService.getByName(name);
@@ -75,7 +75,7 @@ namespace PeliculasAPI.Controllers
         }
 
         [HttpGet("/age")]
-        public async Task<ActionResult<IEnumerable<Character>>> GetCharactersByAge([FromQuery] int age)
+        public ActionResult<IEnumerable<Character>> GetCharactersByAge([FromQuery] int age)
         {
             var characters = _characterService.getByAge(age);
 
@@ -87,7 +87,7 @@ namespace PeliculasAPI.Controllers
         }
 
         [HttpGet("/movie")]
-        public async Task<ActionResult<IEnumerable<Character>>> GetCharactersByMovie([FromQuery] int movieId)
+        public ActionResult<IEnumerable<Character>> GetCharactersByMovie([FromQuery] int movieId)
         {
 
             Movies movie = _movieService.GetById(movieId);
@@ -97,7 +97,7 @@ namespace PeliculasAPI.Controllers
             var characters = _characterService.getByMovies(movieId);
 
             bool isEmpty = !characters.Any();
-            
+
             if (isEmpty) return BadRequest();
 
             return Ok(characters);
@@ -107,7 +107,7 @@ namespace PeliculasAPI.Controllers
         // POST: api/Characters
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Character>> PostCharacter(CharacterCreationDTO characterDTO)
+        public ActionResult PostCharacter(CharacterCreationDTO characterDTO)
         {
             Character character = _characterService.AddCharacter(characterDTO);
 
@@ -117,7 +117,7 @@ namespace PeliculasAPI.Controllers
         }
 
         [HttpPost("assignCharacter")]
-        public async Task<ActionResult<Character>> AssignCharactertoMovie(CharacterMovies characterMovies)
+        public ActionResult<Character> AssignCharactertoMovie(CharacterMovies characterMovies)
         {
             bool result = _characterService.AssignCharacterMovie(characterMovies);
 
@@ -132,7 +132,7 @@ namespace PeliculasAPI.Controllers
         // PUT: api/Characters/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCharacter(int id, CharacterCreationDTO characterDTO)
+        public IActionResult PutCharacter(int id, CharacterCreationDTO characterDTO)
         {
 
             Character character = _characterService.UpdateCharacter(id, characterDTO);
@@ -143,7 +143,7 @@ namespace PeliculasAPI.Controllers
 
         // DELETE: api/Characters/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCharacter(int id)
+        public IActionResult DeleteCharacter(int id)
         {
 
             bool result = _characterService.DeleteCharacter(id);
