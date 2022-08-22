@@ -23,6 +23,8 @@ Implemente todos los requisitos del challenge, algunos son :
 
 - Roles y Json Web Token
 
+-Implementacion Code First
+
 ![image](https://user-images.githubusercontent.com/79388833/185541027-8abb2f10-4248-4c9f-8857-0be0ee8cf61b.png)
 
 
