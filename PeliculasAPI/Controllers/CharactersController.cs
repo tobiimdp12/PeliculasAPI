@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +18,7 @@ namespace PeliculasAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "AppUser")]
     public class CharactersController : ControllerBase
     {
 
@@ -30,6 +33,7 @@ namespace PeliculasAPI.Controllers
             _movieService = movieService;
         }
 
+        [AllowAnonymous]
         // GET: api/Characters
         [HttpGet]
         public ActionResult<IEnumerable<Character>> GetCharacters()
